@@ -24,23 +24,32 @@ def main():
         print(f"Invalid file: {filepath}")
         sys.exit(1)
 
-    if verbose:
-        print(f"Parsing ELF file: {filepath}")
-
-    elf_data = parse_elf(filepath)
-    symbols = extract_symbols(elf_data)
-    output = format_output(symbols)
-
-    if verbose:
-        print(f"Extracted {len(symbols)} symbols.")
-
-    if output_file:
-        with open(output_file, 'w') as f:
-            f.write(output)
+    try:
         if verbose:
-            print(f"Output written to {output_file}")
-    else:
-        print(output)
+            print(f"Parsing ELF file: {filepath}")
+
+        elf_data = parse_elf(filepath)
+        symbols = extract_symbols(elf_data)
+        output = format_output(symbols)
+
+        if verbose:
+            print(f"Extracted {len(symbols)} symbols.")
+
+        if output_file:
+            try:
+                with open(output_file, 'w') as f:
+                    f.write(output)
+                if verbose:
+                    print(f"Output written to {output_file}")
+            except IOError as e:
+                print(f"Error writing to file {output_file}: {e}")
+                sys.exit(1)
+        else:
+            print(output)
+
+    except Exception as e:
+        print(f"An error occurred while processing the ELF file: {e}")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
